@@ -13,51 +13,60 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const {data} = client
-  .query({
+export async function getServerSideProps() {
+  const { data } = await client.query({
     query: gql`
-    query jobs {
-      jobs {
-        id
-        title
-        slug
-        commitment {
+      query jobs {
+        jobs {
+          id
           title
+          slug
+          commitment {
+            title
+          }
+          cities {
+            name
+            country {
+              isoCode
+            }
+          }
+          countries {
+            name
+          }
+          remotes {
+            name
+          }
+          description
+          applyUrl
+          company {
+            name
+          }
+          tags {
+            name
+          }
+          isPublished
+          isFeatured
+          locationNames
+          userEmail
+          postedAt
+          createdAt
+          updatedAt
         }
-        countries {
-          name
-        }
-        remotes {
-          name
-        }
-        description
-        applyUrl
-        company {
-          name
-        }
-        tags {
-          name
-        }
-        isPublished
-        isFeatured
-        locationNames
-        userEmail
-        postedAt
-        createdAt
-        updatedAt
       }
-    }
     `,
-  })
-  .then((result) => console.log(result));
-  // return {
-  //   props: {
-  //     jobs: data.jobs,
-  //   }
-  // };
+  });
+  // .then((result) => console.log(result));
 
-export default function Home() {
-    return (
+  return {
+    props: {
+      allJobs: data.jobs,
+    },
+  };
+}
+
+export default function Home({ allJobs }) {
+  console.log("the jobs", allJobs);
+  return (
     <div className={styles.container}>
       <Head>
         <title>JobBatical</title>
@@ -71,37 +80,35 @@ export default function Home() {
         {/* <p className={styles.description}>
           Get started by editing{' '}
           <code className={styles.code}>pages/index.js</code>
-        </p>
+        </p> */}
 
         <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div> */}
+          {allJobs?.map((job) => (
+            <div className={styles.card} key={job.id}>
+              <div className={styles.column1}>
+                <h1 className={styles.jobTitle}>{job.title}</h1>
+                <p>{job.company.name}</p>
+              </div>
+              {job.tags?.slice(0, 3).map((tag) => (
+                <div className={styles.tags} key={tag.id}>
+                  <h3 className={styles.tag}>{tag.name}</h3>
+                </div>
+              ))}
+              {/* <div>{job.locationNames}</div> */}
+              {job.cities?.map((city) => (
+                <div className={styles.column3} key={city.id}>
+                  <h4>{city.name}</h4>
+                  {/* {job.cities?.country?.map((country) => (
+                    <div key={country.isoCode}>
+                      {country.isoCode}
+                      <img src={country.isoCode} />
+                    </div>
+                  ))} */}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </main>
 
       <footer className={styles.footer}>
@@ -115,6 +122,7 @@ export default function Home() {
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
         </a> */}
+        <p>Page made by Laura Sacripanti for JobBatical</p>
       </footer>
     </div>
   );
