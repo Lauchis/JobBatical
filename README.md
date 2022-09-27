@@ -6,13 +6,15 @@ You can see a list of GraphQL jobs.
 
 ## 🚅  Quick start
 
-1.  **Install the dependencies.**
+1. **Clone the repo.**
+
+2.  **Install the dependencies.**
 ```bash
 npm install
 #or
 yarn install
 ```
-2.  **Run the development server.**
+3.  **Run the development environment.**
 
 ```bash
 npm run dev
